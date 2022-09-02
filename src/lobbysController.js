@@ -10,10 +10,7 @@ const getLobby = function(id) {
 
 const createLobby = function() {
     let lobby = {
-        id: Math.random().toString(36).slice(2).substring(0,6),
-        difficulty: "easy",
-        state: "waiting",
-        language: "en"
+        id: Math.random().toString(36).slice(2).substring(0,6)
     }
     lobbysList.set(lobby.id, lobby)
     return JSON.stringify(lobby)

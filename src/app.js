@@ -1,5 +1,6 @@
 const http = require('http')
 const lobbys = require('./lobbysController.js')
+const games = require('./gamesController.js')
 const { Server } = require("socket.io")
 const fs = require('fs')
 
@@ -73,13 +74,26 @@ io.sockets.on('connection', function(socket) {
     
     socket.on('create', function(room) {
       socket.join(room);
-      io.in(room).emit('chat message', 'a user joined the room')
+      io.in(room).emit('join message', 'a user joined the room')
       console.log('a user joined the room: ' + room);
     });
 
-    socket.on('chat message', function(msg,room) {
-        io.in(room).emit('chat message', msg)
-        console.log('room: '+ room + ' message: ' + msg);
+    socket.on('disconnect', () => {
+        console.log('a user disconnected');
+      });
+
+    socket.on('chat message', function(msg,room,username) {
+        io.in(room).emit('chat message', msg, username)
+        console.log('room: '+ room + ' user: ' + username+ ' message: ' + msg);
+      });
+
+    socket.on('control message', function(type,room,value) {
+        if (type === 'start'){
+            console.log('Starting a round of: '+ value + 'in room '+ room);
+            io.in(room).emit('control message', type, value)
+            json = startGame(value)
+            io.in(room).emit('control message', 'gamedata', json)
+        }
       });
   });
 
